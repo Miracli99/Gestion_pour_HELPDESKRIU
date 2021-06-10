@@ -321,12 +321,18 @@ def contenu_delete_wtf():
                 return redirect(url_for('contenus_afficher', order_by="ASC", id_contenu_sel=0))
 
         if request.method == "GET":
+            mybd_curseur = MaBaseDeDonnee().connexion_bd.cursor()
+
             valeur_select_dictionnaire = {"value_id_contenu": id_contenu_delete}
             print(id_contenu_delete, type(id_contenu_delete))
 
+            sql_armoir_contenu = """SELECT contenu, Nom_armoir From t_avoir_contenu
+                                    INNER JOIN t_armoir ON t_armoir.Id_armoir = t_avoir_contenu.Fk_armoir
+                                    INNER JOIN t_contenu ON t_contenu.Id_contenu = t_avoir_contenu.Fk_contenu
+                                    WHERE Fk_contenu = %(value_id_contenu)s
+                                    """
 
-
-            mybd_curseur = MaBaseDeDonnee().connexion_bd.cursor()
+            mybd_curseur.execute(sql_armoir_contenu,valeur_select_dictionnaire)
 
             data_armoirs_attribue_contenu_delete = mybd_curseur.fetchall()
             print("data_armoirs_attribue_contenu_delete...", data_armoirs_attribue_contenu_delete)
